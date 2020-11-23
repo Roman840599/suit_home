@@ -25,10 +25,9 @@ class MyMQTTClass(mqtt.Client):
     mqtt.Client.on_message = res_of_message
     mqtt.Client.on_publish = res_of_publish
 
-    def run(self, host_name, topic, QoS):
+    def push_message(self, host_name, topic, QoS):
         self.connect(host_name)
         self.loop_start()
-        while True:
-            temperature = random.randrange(10, 30, 1)
-            self.publish(topic, temperature, QoS)
-            time.sleep(5)
+        temperature = random.randrange(10, 30, 1)
+        self.publish(topic, temperature, QoS)
+        self.loop_stop()
