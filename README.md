@@ -1,3 +1,2 @@
 # suit_home
-
-created new repository
+project provides new capabilities of controlling home sensors.
