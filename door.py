@@ -7,7 +7,7 @@ pid = os.getpid()
 door = MyMQTTClass(pid)
 
 while True:
-    door_status = random.randrange(0, 2, 1)
+    door_status = random.choice(['open', 'closed'])
     host = '127.0.0.1'
     topic = 'door/' + str(pid) + '/status'
     currentQoS = 2

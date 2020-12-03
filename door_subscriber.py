@@ -8,7 +8,8 @@ def recieving_from_mqbroker():
 
     def on_message(client, userdata, msg):
         print("Message received. Topic: {}. Payload: {}".format(msg.topic, str(msg.payload)))
-        q.put(str(msg.payload))
+        door_status = str(msg.payload).split("'")[1]
+        q.put(door_status)
 
     client.on_message = on_message
     client.loop_start()
@@ -19,13 +20,12 @@ def sending_to_django():
 
     async def sending(websocket, path):
         while True:
-            m = q.get()
-            if m == "b'0'":
-                await websocket.send('closed')
-            else:
-                await websocket.send('open')
+            door_status = q.get()
+            await websocket.send(door_status)
 
-    start_server = websockets.serve(sending, '127.0.0.1', 5678)
+    specified_host = '127.0.0.1'
+    specified_port = 5678
+    start_server = websockets.serve(sending, specified_host, specified_port)
     asyncio.get_event_loop().run_until_complete(start_server)
     asyncio.get_event_loop().run_forever()
 
