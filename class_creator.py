@@ -1,6 +1,4 @@
 import paho.mqtt.client as mqtt
-import time
-import random
 
 
 class MyMQTTClass(mqtt.Client):
@@ -25,9 +23,8 @@ class MyMQTTClass(mqtt.Client):
     mqtt.Client.on_message = res_of_message
     mqtt.Client.on_publish = res_of_publish
 
-    def push_message(self, host_name, topic, QoS):
+    def push_message(self, host_name, topic, QoS, message_to_publish):
         self.connect(host_name)
         self.loop_start()
-        temperature = random.randrange(10, 30, 1)
-        self.publish(topic, temperature, QoS)
+        self.publish(topic, message_to_publish, QoS)
         self.loop_stop()

@@ -20,17 +20,19 @@ def sending_to_django():
     async def sending(websocket, path):
         while True:
             m = q.get()
-            await websocket.send(m)
-            await asyncio.sleep(2)
+            if m == "b'0'":
+                await websocket.send('closed')
+            else:
+                await websocket.send('open')
 
-    start_server = websockets.serve(sending, "127.0.0.1", 8000)
+    start_server = websockets.serve(sending, '127.0.0.1', 5678)
     asyncio.get_event_loop().run_until_complete(start_server)
     asyncio.get_event_loop().run_forever()
 
 
 if __name__ == '__main__':
     client = mqtt.Client()
-    client.connect('127.0.0.1')
+    client.connect("127.0.0.1")
     q = Queue()
     Process(target=recieving_from_mqbroker()).start()
     Process(target=sending_to_django).start()
