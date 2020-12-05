@@ -1,42 +1,35 @@
 import paho.mqtt.client as mqtt
 import sqlite3
 
+# In the SQLite3 db each new value of average temperature is related with unique id, which is foreign key.
+# In this code mentioned id represented as id_of_average_temperature.
+# In addition, before writting down in db values of average temperature,  we should recieve values
+# of current temperature from each thermometer and put it down in some_dict.
 
-id = 1
-d = dict()
+id_of_each_average_temperature = 1
+some_dict = dict()
+number_of_thermometers = 2
 
 
 def on_message(client, userdata, msg):
-    global id
+    global id_of_each_average_temperature
     print("Message received. Topic: {}. Payload: {}".format(msg.topic, str(msg.payload)))
     pid = msg.topic.split('/')[1]
-
-    #Для того, чтобы начать передавать на сервер среднюю темпеатуру необходимо получить первое
-    #сообщение от каждого градусника, которые помещаются в словарь d.
-    d[pid] = int(msg.payload)
-    if len(d) < 2:
-        id += 1
+    some_dict[pid] = int(msg.payload)
+    if len(some_dict) < number_of_thermometers:
+        id_of_each_average_temperature += 1
         pass
     else:
-        #Когда длина словаря соответствует числу градусников, начинает высчитываться среднее значение
-        #и отправляется на сервер.
-        sum = 0
-        for i in d:
-            sum += d[i]
+        sum = 0  		# When the length of some_dict corresponds the amount of thermometers we can calculate
+        for i in some_dict:  	# average temperature and put in down in db.
+            sum += some_dict[i]
         res = sum / 2
-        print('start connection with server', res)
-        try:
+        with sqlite3.connect("firstapp/db.sqlite3") as conn:
+            cursor = conn.cursor()
             cursor.execute("begin")
-            cursor.execute("INSERT INTO main_sensor VALUES ({},{})".format(id, res))
+            cursor.execute("INSERT INTO main_sensor VALUES ({},{})".format(id_of_each_average_temperature, res))
             cursor.execute("commit")
-        except:
-            cursor.execute("rollback")
-        id += 1
-
-
-conn = sqlite3.connect("firstapp/db.sqlite3")
-conn.isolation_level = None
-cursor = conn.cursor()
+        id_of_each_average_temperature += 1
 
 
 client = mqtt.Client()
