@@ -1,19 +1,42 @@
-{% extends 'main/base.html' %}
+<!DOCTYPE html>
+<html lang="en">
+<head>{% load static %}
+    <link rel="stylesheet" type="text/css" href="{% static 'main/style.css' %}"/>
+    <meta charset="UTF-8">
+    <title>Главная страница</title>
+</head>
+<body>
+    <div class="frame">
+        <div class="some_title">
+            <h1>Smart Home App</h1>
+        </div>
+        <hr align="center" width="350" size="1" />
+        <div class="wrapper">
+            {% load static %}
+            <img src="{% static 'main/home.jpg' %}" alt="My image"/>
+            <div class="description">
+                С нами можно легко узнать как обстоят дела дома!)
+            </div>
+        </div>
+        <div class="temperature_value">
+            Средняя температура дома сейчас: {% for el in sensors %}
+                                                {{ el.temperature_value }}
+                                                {% endfor %}
+        </div>
+    </div>
 
-{% block title %}
-Главная страница
-{% endblock %}
+</body>
+    <script>
+            var ws = new WebSocket("ws://127.0.0.1:5678/"),
+                parent = document.getElementsByClassName('frame')[0];
+                message = document.createElement('div');
+            message.classList.add('door_value');
+            message.textContent = 'Состояние входной двери: closed'
 
-{% block appname %}
-Я, дома!
-{% endblock %}
-
-{% block temper %}
-Температурра дома сейчас:
-{% endblock %}
-
-{% block value %}
-    {% for el in sensors %}
-        {{ el.title }}
-    {% endfor %}
-{% endblock %}
+            ws.onmessage = function (event) {
+                var msg = document.getElementsByClassName('door_value')[0];
+                msg.textContent = ['Состояние входной двери:', event.data].join(' ');
+            };
+            parent.appendChild(message);
+        </script>
+</html>

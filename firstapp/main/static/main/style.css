@@ -1,0 +1,39 @@
+div.frame {
+    width: 600px;
+    height: 400px;
+    margin: 50px auto 50px auto;
+    border: 2px solid #111111;
+}
+
+div.some_title {
+    margin: 25px auto 0px auto;
+    text-align: center;
+}
+
+div.temperature_value {
+    padding: 10px 10px 10px 60px;
+    font-weight: bold;
+}
+
+div.door_value {
+    padding: 10px 10px 10px 60px;
+    font-weight: bold;
+}
+
+div.wrapper {
+    width: 550px;
+    height: 200px;
+}
+
+img {
+    width: 300px;
+    height:180px;
+    float: left;
+}
+
+div.description {
+    width: 200px;
+    float: right;
+    padding: 70px 0px;
+    font-style: italic;
+}
