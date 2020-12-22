@@ -1,0 +1,46 @@
+version: "3.5"
+
+services:
+    broker:
+        build: mosquitto_container/
+        command: ["/usr/sbin/mosquitto", "-c", "/mosquitto/config/mosquitto.conf"]
+        network_mode: host
+        ports:
+            - 1883:1883
+
+    thermometers:
+        build: thermometers_container/
+        command: ["python", "./runner.py", "5"]
+        network_mode: host
+        volumes:
+            - "./real_project:/thermometers_container"
+        depends_on:
+            - broker
+
+    door:
+        build: door_container/
+        command: ["python", "./door.py"]
+        network_mode: host
+        volumes:
+            - "./real_project:/door_container"
+        depends_on:
+            - broker
+
+    subscriber:
+        build: subscriber_container/
+        command: ["python", "./common_subscriber.py"]
+        network_mode: host
+        volumes:
+            - "./real_project:/subscriber_container"
+        depends_on:
+            - broker
+
+    web:
+        build: web_app_container/
+        restart: on-failure
+        network_mode: host
+        ports:
+            - "8000:8000"
+        volumes:
+            - "./real_project:/web_app_container"
+        command: ["python", "web_app_container/firstapp/manage.py", "runserver", "0.0.0.0:8000"]
